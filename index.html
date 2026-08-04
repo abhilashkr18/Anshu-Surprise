@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anshika's Ultimate Birthday World ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #1a091d;
+      --card-bg: linear-gradient(145deg, #fff0f5, #ffe4e1);
+      --pink-soft: #f472b6;
+      --pink-medium: #ec4899;
+      --pink-deep: #be185d;
+      --gold: #f59e0b;
+      --text-dark: #2d0c1e;
+      --purple-accent: #8b5cf6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #effectsCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .bgm-fixed {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 10000;
+      background: rgba(236, 72, 153, 0.85);
+      backdrop-filter: blur(10px);
+      border: 2px solid #fff;
+      padding: 8px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.4);
+    }
+
+    .quest-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      min-height: 100vh;
+      padding: 10px 8px 25px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .progress-bar {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 5px 0 10px 0;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: all 0.4s ease;
+    }
+
+    .dot.active {
+      background: var(--pink-medium);
+      box-shadow: 0 0 12px var(--pink-medium);
+      transform: scale(1.4);
+    }
+
+    .dot.done {
+      background: var(--gold);
+    }
+
+    .stage {
+      display: none;
+      background: var(--card-bg);
+      color: var(--text-dark);
+      border-radius: 24px;
+      padding: 18px 14px;
+      box-shadow: 0 12px 35px rgba(236, 72, 153, 0.35);
+      border: 3px solid rgba(244, 114, 182, 0.6);
+      text-align: center;
+      width: 100%;
+      min-height: 94vh;
+      animation: slideUpFade 0.5s ease forwards;
+    }
+
+    .stage.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .level-tag {
+      display: inline-block;
+      background: linear-gradient(135deg, #ec4899, #be185d);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 6px 20px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+      margin-bottom: 10px;
+    }
+
+    h2.title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.8rem;
+      color: var(--pink-deep);
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .typewriter-box {
+      font-family: 'Caveat', cursive;
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.5;
+      color: #3b092b;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 18px 16px;
+      border-radius: 18px;
+      border-left: 6px solid var(--pink-medium);
+      margin-bottom: 12px;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+      white-space: pre-wrap;
+    }
+
+    .media-container {
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 18px;
+      padding: 6px;
+      border: 2px dashed var(--pink-soft);
+    }
+
+    .custom-media {
+      width: 100%;
+      max-height: 55vh;
+      object-fit: contain;
+      border-radius: 14px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      border: 2px solid #fff;
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, #ec4899, #be185d);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
+      margin-top: 10px;
+      width: 100%;
+      max-width: 320px;
+      position: relative;
+      z-index: 10001;
+    }
+
+    .chess-board {
+      width: 270px;
+      height: 270px;
+      margin: 10px auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      border: 4px solid #4a1525;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .chess-square {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+    }
+
+    .square-light { background: #fce7f3; }
+    .square-dark { background: #f472b6; }
+
+    .ludo-board-full {
+      width: 270px;
+      height: 270px;
+      margin: 10px auto;
+      background: #fff;
+      border: 4px solid #2d0c1e;
+      border-radius: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .ludo-box {
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      position: relative;
+    }
+
+    .ludo-red { background: #fca5a5; }
+    .ludo-green { background: #86efac; }
+    .ludo-yellow { background: #fde047; }
+    .ludo-blue { background: #93c5fd; }
+    .ludo-home { background: #f472b6; color: #fff; font-size: 1.5rem; }
+
+    .wishes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    .wish-card {
+      background: #fff;
+      border: 2px dashed var(--pink-soft);
+      border-radius: 14px;
+      padding: 12px 6px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--pink-deep);
+      position: relative;
+      z-index: 10001;
+      cursor: pointer;
+    }
+
+    .wish-card.opened {
+      background: #fce7f3;
+      border-style: solid;
+      border-color: var(--pink-medium);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= INTRO SCREENS (CAKE & RIBBON) ================= -->
+  <div id="birthday-intro-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%); z-index: 99999; display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box;">
+    
+    <!-- SCREEN 1: CAKE & CANDLES -->
+    <div id="cake-screen" style="background: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 90%; max-width: 420px; display: flex; flex-direction: column; align-items: center;">
+      <h2 style="color: #d63031; font-size: 20px; margin-bottom: 15px;">🎉 Tap the Candles to Blow Them Out! 🕯️</h2>
+      <div style="font-size: 90px; margin: 20px 0; position: relative; cursor: pointer;" onclick="blowCandles()">
+        <div style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; align-items: flex-end;">
+          <div id="flame1" style="width: 12px; height: 18px; background: orange; border-radius: 50% 50% 20% 20%; box-shadow: 0 0 10px yellow;"></div>
+          <div id="flame2" style="width: 12px; height: 18px; background: orange; border-radius: 50% 50% 20% 20%; box-shadow: 0 0 10px yellow;"></div>
+          <div style="font-size: 22px; font-weight: bold; color: #ff4757; background: #fff; padding: 2px 8px; border-radius: 8px; border: 2px solid #ff4757;">19</div>
+        </div>
+        🎂
+      </div>
+      <div id="cake-wish-text" style="display: none; margin-top: 15px;">
+        <h1 style="color: #d63031; font-size: 24px; margin-bottom: 15px;">✨ Happy Birthday Anshu! ✨</h1>
+        <button onclick="showRibbonScreen()" style="background: #ff4757; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 50px; font-weight: bold; cursor: pointer;">Open Your Special Gift 🎁➔</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: RIBBON CUT BOX -->
+    <div id="ribbon-screen" style="display: none; background: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 90%; max-width: 420px; flex-direction: column; align-items: center;">
+      <h2 style="color: #d63031; font-size: 20px; margin-bottom: 15px;">✂️ Cut the Ribbon to Unlock Your Vault! 🎀</h2>
+      <div style="position: relative; font-size: 110px; margin: 30px 0; cursor: pointer;" onclick="cutRibbon()">
+        <div id="ribbonV" style="position: absolute; width: 14px; height: 100%; background: #e84393; left: 50%; top: 0; transform: translateX(-50%); transition: all 0.5s;"></div>
+        <div id="ribbonH" style="position: absolute; height: 14px; width: 100%; background: #e84393; top: 50%; left: 0; transform: translateY(-50%); transition: all 0.5s;"></div>
+        <div style="position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); font-size: 45px;">🎀</div>
+        🎁
+      </div>
+      <p style="color: #666; font-size: 14px; font-weight: bold;">Tap on the Gift Box to Cut the Ribbon!</p>
+    </div>
+
+  </div>
+
+  <canvas id="effectsCanvas"></canvas>
+
+  <button class="bgm-fixed" onclick="toggleBGM()">
+    <span id="bgmIcon">🎵</span> <span id="bgmLabel">Play BGM</span>
+  </button>
+  <audio id="bgmAudio" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=cozy-acoustic-112189.mp3"></audio>
+
+  <div class="quest-container">
+
+    <div class="progress-bar">
+      <div class="dot active" id="dot1"></div>
+      <div class="dot" id="dot2"></div>
+      <div class="dot" id="dot3"></div>
+      <div class="dot" id="dot4"></div>
+      <div class="dot" id="dot5"></div>
+      <div class="dot" id="dot6"></div>
+      <div class="dot" id="dot7"></div>
+      <div class="dot" id="dot8"></div>
+      <div class="dot" id="dot9"></div>
+      <div class="dot" id="dot10"></div>
+      <div class="dot" id="dot11"></div>
+      <div class="dot" id="dot12"></div>
+    </div>
+
+    <!-- GIFT 1 -->
+    <div class="stage active" id="stage1">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 1 😊</div>
+        <h2 class="title">🎂 Happy Birthday Anshikaa 🎂</h2>
+        <div class="typewriter-box" id="tw1"></div>
+        
+        <div class="media-container">
+          <img src="anshikaji.jpg" class="custom-media" alt="Happy Birthday Dear Anshika">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(2)">Next Gift ➔</button>
+    </div>
+
+    <!-- GIFT 2 -->
+    <div class="stage" id="stage2">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 2 😊</div>
+        <h2 class="title">🎁 Wrapped With Pure Love 🎁</h2>
+        <div class="typewriter-box" id="tw2"></div>
+        
+        <div class="media-container">
+          <img src="icecream.jpg" class="custom-media" alt="Icecream">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(3)">Open Special Letter ➔</button>
+    </div>
+
+    <!-- GIFT 3 -->
+    <div class="stage" id="stage3">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 3 😊</div>
+        <h2 class="title">💙 A Heartfelt Letter For You 💙</h2>
+        <div class="typewriter-box" id="tw3"></div>
+        
+        <div class="media-container">
+          <img src="kajukatli.jpg" class="custom-media" alt="Special Dish">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(4)">Enter Chess Arena ➔</button>
+    </div>
+
+    <!-- GIFT 4 (CHESS ARENA) -->
+    <div class="stage" id="stage4">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 4 😊</div>
+        <h2 class="title">♟️ The Grand Chess Arena ♟️</h2>
+        <div class="typewriter-box" id="tw4"></div>
+        
+        <div class="chess-board" id="chessBoard">
+          <div class="chess-square square-light" id="c0">♚</div>
+          <div class="chess-square square-dark" id="c1">♛</div>
+          <div class="chess-square square-light" id="c2">.</div>
+          <div class="chess-square square-dark" id="c3">.</div>
+          <div class="chess-square square-dark" id="c4">.</div>
+          <div class="chess-square square-light" id="c5">.</div>
+          <div class="chess-square square-dark" id="c6">.</div>
+          <div class="chess-square square-light" id="c7">.</div>
+          <div class="chess-square square-light" id="c8">.</div>
+          <div class="chess-square square-dark" id="c9">.</div>
+          <div class="chess-square square-light" id="c10">.</div>
+          <div class="chess-square square-dark" id="c11">.</div>
+          <div class="chess-square square-dark" id="c12">♔</div>
+          <div class="chess-square square-light" id="c13">.</div>
+          <div class="chess-square square-dark" id="c14">.</div>
+          <div class="chess-square square-light" id="c15">♕</div>
+        </div>
+        <p id="chessStatus" style="font-size: 1.1rem; font-weight: 700; color: var(--pink-deep); margin-bottom: 5px; position:relative; z-index:10001;">Tap below to make your winning move!</p>
+        <button class="btn-next" style="padding: 10px 18px; font-size: 0.95rem; margin: 0 auto 10px auto;" onclick="playChessMove()">Play Winning Move ♛💥</button>
+
+        <div class="media-container">
+          <img src="chess.jpg" class="custom-media" alt="Your Chess Victory">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(5)">Enter Ludo Arena ➔</button>
+    </div>
+
+    <!-- GIFT 5 (LUDO ARENA) -->
+    <div class="stage" id="stage5">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 5 😊</div>
+        <h2 class="title">🎲 Full Display Ludo Arena 🎲</h2>
+        <div class="typewriter-box" id="tw5"></div>
+
+        <div class="ludo-board-full">
+          <div class="ludo-box ludo-red">🔴</div>
+          <div class="ludo-box" id="lb1">.</div>
+          <div class="ludo-box ludo-green">🟢</div>
+          <div class="ludo-box" id="lb4">.</div>
+          <div class="ludo-box ludo-home" id="lbHome">🏆</div>
+          <div class="ludo-box" id="lb2">🟡</div>
+          <div class="ludo-box ludo-blue">🔵</div>
+          <div class="ludo-box" id="lb3">.</div>
+          <div class="ludo-box ludo-yellow">⭐</div>
+        </div>
+
+        <div style="font-size: 2.2rem; font-weight:700; color:var(--pink-deep); position:relative; z-index:10001;" id="diceDisplay">🎲 Click Roll!</div>
+        <button class="btn-next" style="padding: 8px 16px; font-size: 0.95rem; margin-top: 5px;" onclick="playLudoTurn()">Roll 6 & Move Token 🎲</button>
+        <p id="ludoStatus" style="margin-top: 5px; font-size: 1rem; font-weight: 700; color: var(--pink-deep); position:relative; z-index:10001;"></p>
+
+        <div class="media-container">
+          <img src="ludo.jpg" class="custom-media" alt="Our Ludo Gameplay">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(6)">Discover Sweet Memory ➔</button>
+    </div>
+
+    <!-- GIFT 6 -->
+    <div class="stage" id="stage6">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 6 😊</div>
+        <h2 class="title">✨ Unforgettable Moments ✨</h2>
+        <div class="typewriter-box" id="tw6"></div>
+
+        <div class="media-container">
+          <img src="birthday.jpg" class="custom-media" alt="Wish">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(7)">Open Gift 7 ➔</button>
+    </div>
+
+    <!-- GIFT 7 -->
+    <div class="stage" id="stage7">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 7 😊</div>
+        <h2 class="title">🌟 Reasons You Are Special 🌟</h2>
+        <div class="wishes-grid">
+          <div class="wish-card" onclick="openCard(this, '💖 Purest Heart')">Tap Me 1</div>
+          <div class="wish-card" onclick="openCard(this, '👑  Chess Mastermind ')">Tap Me 2</div>
+          <div class="wish-card" onclick="openCard(this, '✨ Brightest Smile')">Tap Me 3</div>
+          <div class="wish-card" onclick="openCard(this, '🌸 Awesome')">Tap Me 4</div>
+        </div>
+        <div class="typewriter-box" id="tw7"></div>
+
+        <div class="media-container">
+          <img src="image/photo7.jpg" class="custom-media" alt="Journey">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(8)">Open Gift 8 ➔</button>
+    </div>
+
+    <!-- GIFT 8 -->
+    <div class="stage" id="stage8">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 8 😊</div>
+        <h2 class="title">🌙 Starlight & Big Dreams 🌙</h2>
+        <div class="typewriter-box" id="tw8"></div>
+
+        <div class="media-container">
+          <img src="photo8.jpg" class="custom-media" alt="Dream✨">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(9)">Open Gift 9 ➔</button>
+    </div>
+
+    <!-- GIFT 9 -->
+    <div class="stage" id="stage9">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 9 😊</div>
+        <h2 class="title">🤝 Timeless Bond Of Joy 🤝</h2>
+        <div class="typewriter-box" id="tw9"></div>
+
+        <div class="media-container">
+          <img src="memories.jpg" class="custom-media" alt="Friendship🙇‍♂️">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(10)">Unlock Box 10 (Double Photos) 🎁➔</button>
+    </div>
+
+    <!-- GIFT 10 (DOUBLE PHOTO BOX FIXED) -->
+    <div class="stage" id="stage10">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 10 😊</div>
+        <h2 class="title">💖 Double Memory Vault 💖</h2>
+        <div class="typewriter-box" id="tw10"></div>
+
+        <div class="media-container" style="display: flex; flex-direction: column; gap: 12px;">
+          <img src="selfie.jpg" class="custom-media" alt="Future Moment 😇" style="max-height: 35vh; object-fit: contain;">
+          <img src="photo10_2.jpg" class="custom-media" alt="Photo 2" style="max-height: 35vh; object-fit: contain;">
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(11)">Watch Cartoon Wish Video 1 🎬➔</button>
+    </div>
+   
+    <!-- GIFT 11 (VIDEO 1 BOX) -->
+    <div class="stage" id="stage11">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 11 😊</div>
+        <h2 class="title">🎬 Comedy Cartoon Birthday Wish 1 🎬</h2>
+        <div class="typewriter-box" id="tw11"></div>
+
+        <div class="media-container">
+          <video class="custom-media" controls poster="photo1.jpg" style="position:relative; z-index:10001;">
+            <source src="video1.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextBox(12)">Watch Final Comedy Wish Video 2 🎬➔</button>
+    </div>
+
+    <!-- GIFT 12 (VIDEO 2 & GRAND FINALE) -->
+    <div class="stage" id="stage12">
+      <div style="width:100%;">
+        <div class="level-tag">GIFT 12 😊</div>
+        <h2 class="title">🎉 Grand Finale & Special Wish 🎉</h2>
+        <div class="typewriter-box" id="tw12"></div>
+
+        <div class="media-container">
+          <video class="custom-media" controls poster="photo2.jpg" style="position:relative; z-index:10001;">
+            <source src="video2.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div style="font-size: 3.5rem; cursor: pointer; margin: 10px 0; position:relative; z-index:10001;" onclick="triggerGrandFinale()">🎁✨</div>
+        <p style="font-size: 1rem; color: var(--pink-deep); font-weight: 700; position:relative; z-index:10001;">Tap Gift Box For Unlimited Celebrations!</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let isPlaying = false;
+    const bgm = document.getElementById('bgmAudio');
+    function toggleBGM() {
+      if (!isPlaying) {
+        bgm.play();
+        document.getElementById('bgmIcon').innerText = '⏸️';
+        document.getElementById('bgmLabel').innerText = 'Pause BGM';
+      } else {
+        bgm.pause();
+        document.getElementById('bgmIcon').innerText = '🎵';
+        document.getElementById('bgmLabel').innerText = 'Play BGM';
+      }
+      isPlaying = !isPlaying;
+    }
+
+    /* Falling Elements */
+    const canvas = document.getElementById('effectsCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let items = [];
+    const fallingEmojis = ['🎈', '🎂', '🍫', '🌸', '🎁', '✨', '💖'];
+
+    function createEffects() {
+      for (let i = 0; i < 35; i++) {
+        items.push({
+          emoji: fallingEmojis[Math.floor(Math.random() * fallingEmojis.length)],
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          size: Math.random() * 20 + 22,
+          speedY: Math.random() * 2 + 1.2,
+          speedX: Math.sin(Math.random()) * 1.5
+        });
+      }
+    }
+    createEffects();
+
+    function renderEffects() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      items.forEach(item => {
+        ctx.font = `${item.size}px serif`;
+        ctx.fillText(item.emoji, item.x, item.y);
+
+        item.y += item.speedY;
+        item.x += item.speedX;
+
+        if (item.y > canvas.height) {
+          item.y = -30;
+          item.x = Math.random() * canvas.width;
+        }
+      });
+      requestAnimationFrame(renderEffects);
+    }
+    renderEffects();
+
+    /* Handwritten Messages */
+    const messages = {
+      1: `Before anything else… I just want you to know that your presence brings a beautiful brightness to this world! ✨\nToday is dedicated to celebrating the amazing, wonderful, and truly unique person you are. 🌸\nLet's start this magical journey with lots of joy and sweet smiles! 💕`,
+      2: `Here is a gift wrapped with pure affection and warm thoughts! 🎁\nEvery single detail inside this surprise world was designed to bring a wide smile to your face. Keep exploring, champion! ✨😊`,
+      3: `Dear Anshikaa,\nSometimes, life brings people into our lives who turn simple days into beautiful memories. I feel so grateful for our friendship! 💙\nThank you for your warmth, your sweetness, and for always being such a genuinely awesome person. May your life be filled with endless laughter, boundless peace, and huge victories! 🌟`,
+      4: `Life is just like a game of Chess: every strategic move shapes your path to victory! ♟️\nYou have the mind of a true winner and the elegance of a Queen. Place your move on the board and claim your throne today! 👑✨`,
+      5: `Welcome to the Ludo Arena! 🎲\nNo matter where the dice rolls or how crazy the game gets, victory always belongs to those who play with joy! Roll your lucky 6, capture the board, and claim your trophy! 🏆🌟`,
+      6: `Looking back at all our hilarious chats, late-night game sessions, and pure fun moments… every memory shines bright like a diamond! 💎\nMay our album of unforgettable memories keep getting bigger and happier forever! 📸💖`,
+      7: `Here are just a few of the endless reasons why you are so deeply admired and special to everyone around you! Keep spreading your radiant positive vibes everywhere you go! 👑✨`,
+      8: `May the shining stars align to grant every single wish and dream you hold in your heart. May this new year of your life unlock limitless happiness, love, and success! 🌙💫`,
+      9: `True friendship is a rare treasure, and having you as a friend is a true blessing. Thank you for always being real, incredibly supportive, and wonderfully sweet! 🤝💙`,
+      10: `Here is your Double Memory Vault! 💖\nTwo special frames filled with beautiful vibes to celebrate this milestone. You deserve all the double happiness in the world today! 🌟`,
+      11: `Time for some laughter! 🎬🍿\nHere is a specially selected hilarious cartoon birthday wish just for you. Sit back, relax, and enjoy the cute show! 😂🎉`,
+      12: `And here we reach the Grand Finale! 🥳🎬\nEnjoy this final comedy birthday video wish. May your life always be as bright, joyful, and magical as this final celebration! Happy Birthday once again, Anshikaa! 🎂❤️✨`
+    };
+
+    let currentBox = 1;
+    function startTypewriter(boxNum) {
+      const element = document.getElementById(`tw${boxNum}`);
+      if (!element) return;
+      element.innerHTML = '';
+      const text = messages[boxNum];
+      let i = 0;
+      
+      function type() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(type, 15);
+        }
+      }
+      type();
+    }
+
+    startTypewriter(1);
+
+    function nextBox(boxNum) {
+      document.getElementById(`stage${currentBox}`).classList.remove('active');
+      document.getElementById(`dot${currentBox}`).classList.remove('active');
+      document.getElementById(`dot${currentBox}`).classList.add('done');
+
+      currentBox = boxNum;
+
+      document.getElementById(`stage${currentBox}`).classList.add('active');
+      document.getElementById(`dot${currentBox}`).classList.add('active');
+
+      startTypewriter(boxNum);
+    }
+
+    function openCard(el, text) {
+      el.classList.add('opened');
+      el.innerText = text;
+    }
+
+    let chessStep = 0;
+    function playChessMove() {
+      const status = document.getElementById('chessStatus');
+      if (chessStep === 0) {
+        document.getElementById('c1').innerText = '.';
+        document.getElementById('c15').innerText = '♛';
+        status.innerText = "💥 QUEEN MOVE! Queen takes center dominance!";
+        chessStep++;
+      } else if (chessStep === 1) {
+        document.getElementById('c12').innerText = '♔💥';
+        status.innerText = "👑 CHECKMATE! Anshikaa wins in grand style!";
+        chessStep++;
+      }
+    }
+
+    function playLudoTurn() {
+      const dice = document.getElementById('diceDisplay');
+      const status = document.getElementById('ludoStatus');
+      
+      dice.innerText = '🎲 Rolling...';
+      setTimeout(() => {
+        dice.innerText = '⚅ SIX!';
+        document.getElementById('lb2').innerText = '.';
+        document.getElementById('lbHome').innerText = '🔴🏆';
+        status.innerText = '🔥 SIX! Your red token moved directly into Victory Home 🏆!';
+      }, 700);
+    }
+
+    function triggerGrandFinale() {
+      for (let i = 0; i < 50; i++) {
+        items.push({
+          emoji: fallingEmojis[Math.floor(Math.random() * fallingEmojis.length)],
+          x: Math.random() * canvas.width,
+          y: canvas.height + 20,
+          size: Math.random() * 25 + 25,
+          speedY: -(Math.random() * 5 + 3),
+          speedX: Math.sin(Math.random()) * 2
+        });
+      }
+    }
+
+    /* Intro Overlay Functions */
+    function blowCandles() {
+      let f1 = document.getElementById('flame1');
+      let f2 = document.getElementById('flame2');
+      if(f1) f1.style.display = 'none';
+      if(f2) f2.style.display = 'none';
+      
+      setTimeout(() => {
+        let wishText = document.getElementById('cake-wish-text');
+        if(wishText) wishText.style.display = 'block';
+      }, 400);
+    }
+
+    function showRibbonScreen() {
+      let cakeScr = document.getElementById('cake-screen');
+      let ribbonScr = document.getElementById('ribbon-screen');
+      if(cakeScr) cakeScr.style.display = 'none';
+      if(ribbonScr) ribbonScr.style.display = 'flex';
+    }
+
+    function cutRibbon() {
+      let rV = document.getElementById('ribbonV');
+      let rH = document.getElementById('ribbonH');
+      if(rV) rV.style.transform = 'translateX(-50%) scale(0)';
+      if(rH) rH.style.transform = 'translateY(-50%) scale(0)';
+
+      setTimeout(() => {
+        let overlay = document.getElementById('birthday-intro-overlay');
+        if(overlay) overlay.style.display = 'none';
+      }, 600);
+    }
+  </script>   
+</body>
+</html>
